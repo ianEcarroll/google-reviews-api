@@ -1,0 +1,5 @@
+// File 4: /.gitignore
+node_modules/
+.env
+.vercel
+.DS_Store
