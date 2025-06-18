@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/google-reviews.js": {
+      "maxDuration": 10
+    }
+  }
+}
