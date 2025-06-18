@@ -1,6 +1,5 @@
-// File: /api/google-reviews.js
-
 const { google } = require('googleapis');
+const fetch = require('node-fetch'); // must be added to package.json
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -8,7 +7,6 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // Handle raw vs parsed JSON body
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     const { accountId, locationId } = body;
 
@@ -18,39 +16,48 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Set up service account authentication
-    const auth = new google.auth.JWT({
+    const jwtClient = new google.auth.JWT({
       email: process.env.CLIENT_EMAIL,
       key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
       scopes: ['https://www.googleapis.com/auth/business.manage'],
     });
 
-    // ✅ Use the correct Google API module
-    const mybusiness = google.mybusiness({ version: 'v4', auth });
+    await jwtClient.authorize();
 
     const parent = `accounts/${accountId}/locations/${locationId}`;
 
-    const response = await mybusiness.accounts.locations.reviews.list({
-      parent,
+    const response = await fetch(`https://mybusiness.googleapis.com/v4/${parent}/reviews`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${jwtClient.credentials.access_token}`,
+        'Content-Type': 'application/json',
+      },
     });
 
-    const data = response?.data || {};
+    const data = await response.json();
 
-    // Log for debugging
-    console.log('✅ Google API raw response:', JSON.stringify(data, null, 2));
+    if (!response.ok) {
+      console.error("❌ Google API error:", data);
+      return res.status(500).json({
+        error: 'Failed to fetch reviews',
+        message: data.error?.message || 'Unknown error',
+        details: data,
+      });
+    }
 
-    // Safe return
+    console.log("✅ Google Reviews response:", JSON.stringify(data, null, 2));
+
     return res.status(200).json({
       success: true,
       reviews: Array.isArray(data.reviews) ? data.reviews : [],
       totalReviews: data.totalReviewCount || 0,
     });
   } catch (error) {
-    console.error('❌ Google API fetch error:', error.response?.data || error.message);
+    console.error('❌ Fetch reviews error:', error.message);
     return res.status(500).json({
       error: 'Failed to fetch reviews',
       message: error.message,
-      details: error.response?.data || 'No additional details',
+      details: error.stack || 'No additional details',
     });
   }
 };
