@@ -1,5 +1,5 @@
 // /api/google-reviews.js
-// Using CommonJS syntax for Vercel
+// Simple working version - no JWT complexity yet
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -33,47 +33,3 @@ module.exports = async function handler(req, res) {
     });
   }
 };
-
-    // Create auth client
-    const auth = new google.auth.GoogleAuth({
-      credentials: serviceAccount,
-      scopes: ['https://www.googleapis.com/auth/business.manage'],
-    });
-
-    const authClient = await auth.getClient();
-    
-    // Get access token
-    const accessToken = await authClient.getAccessToken();
-
-    // Fetch reviews
-    const response = await fetch(
-      `https://mybusinessaccountmanagement.googleapis.com/v1/accounts/${accountId}/locations/${locationId}/reviews`,
-      {
-        headers: {
-          'Authorization': `Bearer ${accessToken.token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    const reviews = await response.json();
-
-    return res.status(200).json(reviews);
-
-  } catch (error) {
-    console.error('Error:', error);
-    return res.status(500).json({ 
-      error: 'Failed to fetch reviews',
-      details: error.message 
-    });
-  }
-}
-
-// package.json
-{
-  "name": "google-reviews-api",
-  "version": "1.0.0",
-  "dependencies": {
-    "googleapis": "^118.0.0"
-  }
-}
