@@ -1,30 +1,38 @@
-// File: /api/google-reviews.js
-// Deploy this to Vercel (free tier)
+// /api/google-reviews.js
+// Using CommonJS syntax for Vercel
 
-const { google } = require('googleapis');
-
-export default async function handler(req, res) {
-  // Only allow POST
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method not allowed - use POST' });
   }
 
   try {
     const { accountId, locationId } = req.body;
 
-    // Your service account credentials (store in Vercel env vars)
-    const serviceAccount = {
-      type: "service_account",
-      project_id: process.env.PROJECT_ID,
-      private_key_id: process.env.PRIVATE_KEY_ID,
-      private_key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
-      client_email: process.env.CLIENT_EMAIL,
-      client_id: process.env.CLIENT_ID,
-      auth_uri: "https://accounts.google.com/o/oauth2/auth",
-      token_uri: "https://oauth2.googleapis.com/token",
-      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-      client_x509_cert_url: process.env.CLIENT_X509_CERT_URL
-    };
+    if (!accountId || !locationId) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: accountId and locationId' 
+      });
+    }
+
+    // For now, let's verify the function works
+    return res.status(200).json({
+      message: 'Function is working!',
+      received: {
+        accountId,
+        locationId
+      },
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
+    });
+  }
+};
 
     // Create auth client
     const auth = new google.auth.GoogleAuth({
