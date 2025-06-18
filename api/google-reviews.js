@@ -1,6 +1,3 @@
-// File 1: /api/google-reviews.js
-// Main API endpoint for fetching Google Reviews
-
 const { google } = require('googleapis');
 
 module.exports = async function handler(req, res) {
