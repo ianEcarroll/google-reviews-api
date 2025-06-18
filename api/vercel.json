@@ -1,0 +1,8 @@
+// File 6: /vercel.json
+{
+  "functions": {
+    "api/google-reviews.js": {
+      "maxDuration": 10
+    }
+  }
+}
