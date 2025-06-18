@@ -1,0 +1,9 @@
+// File 3: /package.json
+{
+  "name": "google-reviews-api",
+  "version": "1.0.0",
+  "description": "API for fetching Google Business reviews",
+  "dependencies": {
+    "googleapis": "^118.0.0"
+  }
+}
