@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "API for fetching Google Business reviews",
   "dependencies": {
-    "googleapis": "^118.0.0"
-      "node-fetch": "^2.6.7"
+    "googleapis": "^118.0.0",
+    "node-fetch": "^2.6.7"
   }
 }
