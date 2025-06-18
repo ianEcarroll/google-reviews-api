@@ -4,5 +4,6 @@
   "description": "API for fetching Google Business reviews",
   "dependencies": {
     "googleapis": "^118.0.0"
+      "node-fetch": "^2.6.7"
   }
 }
