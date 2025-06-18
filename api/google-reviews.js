@@ -36,8 +36,8 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      reviews: response.data.reviews || [],
-      totalReviews: response.data.totalReviewCount || 0
+      reviews: Array.isArray(response?.data?.reviews) ? response.data.reviews : [],
+      totalReviews: response?.data?.totalReviewCount || 0
     });
 
   } catch (error) {
