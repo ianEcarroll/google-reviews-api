@@ -24,10 +24,7 @@ module.exports = async function handler(req, res) {
     });
 
     // Initialize the My Business API
-    const mybusiness = google.mybusinessaccountmanagement({
-      version: 'v1',
-      auth: auth
-    });
+    const mybusiness = google.mybusiness({ version: 'v4', auth });
 
     // Fetch reviews
     const response = await mybusiness.accounts.locations.reviews.list({
@@ -49,3 +46,24 @@ module.exports = async function handler(req, res) {
     });
   }
 };
+try {
+  const response = await mybusiness.accounts.locations.reviews.list({
+    parent: `accounts/${accountId}/locations/${locationId}`
+  });
+
+  const data = response?.data || {};
+
+  return res.status(200).json({
+    success: true,
+    reviews: Array.isArray(data.reviews) ? data.reviews : [],
+    totalReviews: data.totalReviewCount || 0
+  });
+} catch (error) {
+  console.error('Google API fetch error:', error.response?.data || error.message);
+  return res.status(500).json({
+    error: 'Failed to fetch reviews',
+    message: error.message,
+    details: error.response?.data || 'No additional details'
+  });
+}
+
